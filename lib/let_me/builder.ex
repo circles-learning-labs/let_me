@@ -142,9 +142,7 @@ defmodule LetMe.Builder do
     combined_condition =
       case {allow_condition, deny_condition} do
         {false, _} -> false
-        {_, true} -> false
         {_, false} -> allow_condition
-        {true, _} -> quote(do: !unquote(deny_condition))
         _ -> quote(do: !unquote(deny_condition) && unquote(allow_condition))
       end
 
