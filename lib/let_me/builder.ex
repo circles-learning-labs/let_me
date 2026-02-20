@@ -147,6 +147,7 @@ defmodule LetMe.Builder do
       end
 
     quote do
+      @dialyzer [{:nowarn_function, [authorize?: 4]}, :no_match]
       def authorize?(unquote(rule_name), subject, object, opts) do
         unquote(pre_hook_calls)
         unquote(combined_condition)
