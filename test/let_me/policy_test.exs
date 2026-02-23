@@ -74,6 +74,7 @@ defmodule LetMe.PolicyTest do
         allow :lookup_false
         allow :lookup_false
         allow :lookup_true
+        allow [:lookup_true, :lookup_false]
         allow :lookup_false
       end
     end

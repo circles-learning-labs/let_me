@@ -116,6 +116,9 @@ defmodule LetMe.Builder do
 
       defp evaluate_check(check) do
         case check do
+          {:all, checks} when is_list(checks) ->
+            Enum.all?(checks, &evaluate_check/1)
+
           {mod, fun, args} when is_atom(fun) and is_list(args) ->
             apply(mod, fun, args)
 
@@ -133,6 +136,7 @@ defmodule LetMe.Builder do
          {rule_name, %LetMe.Rule{} = rule},
          check_module
        ) do
+
     pre_hook_calls = build_pre_hook_calls(rule.pre_hooks, check_module)
     allow_condition = build_conditions(rule.allow, check_module)
     deny_condition = build_conditions(rule.deny, check_module)
@@ -145,6 +149,7 @@ defmodule LetMe.Builder do
         {_, false} -> allow_condition
         _ -> quote(do: !unquote(deny_condition) && unquote(allow_condition))
       end
+
 
     quote do
       @dialyzer [{:nowarn_function, [authorize?: 4]}, :no_match]
@@ -227,10 +232,7 @@ defmodule LetMe.Builder do
 
   defp build_check(checks, check_module) when is_list(checks) do
     quote do
-      Enum.all?(
-        unquote(Enum.map(checks, &build_check(&1, check_module))),
-        &evaluate_check/1
-      )
+      {:all, unquote(Enum.map(checks, &build_check(&1, check_module)))}
     end
   end
 
